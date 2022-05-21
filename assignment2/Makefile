@@ -1,4 +1,4 @@
-CLASSDIR = ~/codes/xjtu-compiler
+CLASSDIR = ..
 
 FILES = $(wildcard *.cl)
 TARGET = stack.s
