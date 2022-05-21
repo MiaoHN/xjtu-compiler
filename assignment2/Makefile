@@ -1,20 +1,20 @@
 CLASSDIR = ~/codes/xjtu-compiler
 
 FILES = $(wildcard *.cl)
-OBJS = $(patsubst %.cl, %.s, ${FILES})
+TARGET = stack.s
 
 all: source test
 
-source:
+source: ${FILES}
 	@echo "\e[32;1mCompiling...\e[33;0;m"
-	@${CLASSDIR}/bin/coolc ${FILES}
+	@${CLASSDIR}/bin/coolc ${FILES} -o ${TARGET}
 	@echo "\e[32;1mCompile OK!\e[33;0;m"
 
-test: source
+test: ${TARGET}
 	@echo "\e[32;1mStart testing...\e[33;0m"
-	@${CLASSDIR}/bin/spim -trap_file ${CLASSDIR}/lib/trap.handler -file ${OBJS}
+	@${CLASSDIR}/bin/spim -trap_file ${CLASSDIR}/lib/trap.handler -file ${TARGET}
 	@echo "\e[32;1mTest finished!\e[33;0m"
 
 clean:
-	@rm -f *.s
+	@rm ${TARGET}
 	@echo "\e[32;1mClean finished!\e[33;0m"
