@@ -136,3 +136,56 @@ NEW_LINE  \n
 
 - 预处理区定义的 `NEW_LINE` 需要配合 `{}` 使用（注意不要带空格）
 - 通过 `BEGIN` 跳到对应的分支进行处理，直到遇到 `BEGIN 0` 后退出
+
+## C 语言词法分析器
+
+接下来通过 lex 实现一个 C 语言的词法分析器，严格来说只能实现 C 语言的一个子集。实现目标是能够正确地将一个 C 语言程序的符号进行读取和分类，可以分辨出关键词、界符、数字、标识符等类别，同时能够排查简单非法字符的错误并进行处理。
+
+### Token 设计
+
+下面的正则表达式定义了几种可分辨的字符类型，当前面的类型都未匹配到时，就会走到 `ERROR` 类型
+
+```lex
+STRING        \".*\"
+MACRO         ^#.*\n
+ID            [a-zA-Z_]([0-9]|[a-zA-Z_])*
+INTEGER       0|("+"|"-")?[1-9][0-9]*
+KEYWORD       "break"|"main"|"continue"|"else"|"float"|"for"|"if"|"int"|"return"|"void"|"while"|"do"|"double"|"extern"|"FILE"|"char"|"const"|"fopen"
+OPERATOR      "+"|"-"|"*"|"/"|"="|"=="|"<="|">="|"."
+DELIMITERS    "("|")"|"{"|"}"|"["|"]"|";"|","
+ERROR         .
+```
+
+下面是我定义的 Token 结构体，在正则匹配的过程时将匹配结果存到 `g_tokens` 中
+
+```c
+struct Token {
+  int type;
+  char data[32];
+  int lineno;
+};
+
+struct Token g_tokens[1024];
+int token_len = 0;
+```
+
+### 正则匹配
+
+这一步做字符匹配及 Token 的生成，详细内容见[代码](./lexc.l)。在这里同样使用多重入口略过了注释，遇到 `ERROR` 时也会进入 `ERROR_OCCUR` 状态，直到当前错误字符串结束或者换行
+
+当然我这个错误判断有点羸弱，只能处理单词第一个字符为非法字符的情况：
+
+```c
+  $abc // `$abc` error!
+  a$bc // a accept, `$bc` error! 
+```
+
+### 效果展示
+
+对一个简单的 `Hello World!` [程序](./test/right_test.c)进行分析：
+
+<div align=center><img width=60% src="https://raw.githubusercontent.com/MiaoHN/pictures/master/img/20220523085037.png"/></div>
+
+分析一个有错误的[程序](./test/error_test.c)：
+
+<div align=center><img width=60% src="https://raw.githubusercontent.com/MiaoHN/pictures/master/img/20220523085204.png"/></div>

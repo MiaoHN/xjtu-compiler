@@ -18,6 +18,6 @@
 
 ## 2. 效果截图
 
-<img src="https://raw.githubusercontent.com/MiaoHN/pictures/master/img/image-20220521194639404.png" alt="image-20220521194639404" style="zoom:80%;" />
+<div align=center><img width=80% src="https://raw.githubusercontent.com/MiaoHN/pictures/master/img/image-20220521194639404.png"/></div>
 
-<img src="https://raw.githubusercontent.com/MiaoHN/pictures/master/img/image-20220521203028424.png" alt="image-20220521203028424" style="zoom:80%;" />
+<div align=center><img width=80% src="https://raw.githubusercontent.com/MiaoHN/pictures/master/img/image-20220521203028424.png" alt="image-20220521203028424" style="zoom:80%;" /></div>
