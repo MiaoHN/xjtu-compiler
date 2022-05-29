@@ -20,6 +20,18 @@ lex_compile: $(L_SOURCE)
 	@echo "\e[32;1mCompile lex...\e[33;0;m"
 	@$(LEX) $(L_SOURCE)
 
+test: compile
+	@./$(TARGET) test/test.cl
+
+check: compile
+	@echo "\e[32;1mStart checking...\e[33;0;m"
+	@./$(TARGET) test/test.cl > my-lexer.txt
+	@../bin/reference-lexer test/test.cl > reference-lexer.txt
+	@echo "\e[32;1mmy-lexer                                                      reference-lexer\e[33;0;m"
+	@diff -y --suppress-common-lines my-lexer.txt reference-lexer.txt ; [ $$? -eq 1 ]
+	@rm my-lexer.txt reference-lexer.txt
+	@echo "\e[32;1mCheck done.\e[33;0;m"
+
 clean:
 	@$(RM) $(TARGET) *.yy.c 
-	@echo "\e[32;1mClean finish.\e[33;0;m"
+	@echo "\e[32;1mClean done.\e[33;0;m"
