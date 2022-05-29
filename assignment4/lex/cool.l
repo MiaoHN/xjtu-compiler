@@ -42,6 +42,7 @@ extern YYSTYPE cool_yylval;
  */
 
 int uniqueIndex =1;
+int eofFlag = 0;
 
 %}
 
@@ -70,6 +71,13 @@ LINE            \n
 <MutiCom>"*"+[^*)\n]* {}
 <MutiCom>\n       {++curr_lineno;}
 <MutiCom>"*"+")"  {BEGIN(INITIAL);}
+<MutiCom><<EOF>>  {
+                      if (eofFlag) return 0;
+                      eofFlag = 1;
+                      cool_yylval.error_msg = new char[16];
+                      strcpy(cool_yylval.error_msg,"EOF in comment");
+                      return ERROR;
+                  }
 
 
 "class"           {return CLASS;}
