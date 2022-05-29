@@ -42,7 +42,8 @@ extern YYSTYPE cool_yylval;
  */
 
 int uniqueIndex =1;
-int eofFlag = 0;
+int string_len = 0;
+int str_have_null_char = 0;
 
 %}
 
@@ -51,16 +52,8 @@ int eofFlag = 0;
  */
 
 /* 下面是我们给出的基本实例 */
-TYPEID          [A-Z]+[_A-Za-z0-9]*
-OBJECTID        [a-z]+[_a-zA-Z0-9]*
 
-STR_CONST       \".*\"
-INT_CONST       [0-9]+
-
-WHITE           [ \t]+
-LINE            \n
-
-%s              MutiCom
+%s              MutiCom InStr
 
 %%
 
@@ -72,13 +65,75 @@ LINE            \n
 <MutiCom>\n       {++curr_lineno;}
 <MutiCom>"*"+")"  {BEGIN(INITIAL);}
 <MutiCom><<EOF>>  {
-                      if (eofFlag) return 0;
-                      eofFlag = 1;
                       cool_yylval.error_msg = new char[16];
                       strcpy(cool_yylval.error_msg,"EOF in comment");
+                      BEGIN 0;
+                      return ERROR;
+                  }
+            
+<InStr><<EOF>>    {
+                      strcpy(cool_yylval.error_msg,"EOF in string constant");
+                      BEGIN 0;
                       return ERROR;
                   }
 
+<InStr>\\\n       {curr_lineno++;}
+
+<InStr>\\.        {
+                      if (string_len >= MAX_STR_CONST) {
+                         strcpy(cool_yylval.error_msg, "String constant too long");
+                         BEGIN 0;
+                         return ERROR;
+                      }
+                      switch(yytext[1]){
+                         case '\"': string_buf[string_len++] = '\"'; break;
+                         case '\\': string_buf[string_len++] = '\\'; break;
+                         case 'b': string_buf[string_len++] = '\b'; break;
+                         case 'f': string_buf[string_len++] = '\f'; break;
+                         case 'n': string_buf[string_len++] = '\n'; break;
+                         case 't': string_buf[string_len++] = '\t'; break;
+                         case '0': string_buf[string_len++] = '\0';
+                            str_have_null_char = 1; break;
+                         default: {
+                            string_buf[string_len++] = yytext[0];
+                            string_buf[string_len++] = yytext[1];
+                         }
+                      }
+                  }
+
+<InStr>\n         {
+                      curr_lineno++;
+                      strcpy(cool_yylval.error_msg, "Unterminated string constant");
+                      BEGIN 0;
+                      return ERROR;
+                  }
+
+<InStr>\"         {
+                      if (string_len > 1 && str_have_null_char) {
+                         strcpy(cool_yylval.error_msg, "String contains null character");
+                         BEGIN 0;
+                         return ERROR;
+                      }
+                      cool_yylval.symbol = stringtable.add_string(string_buf);
+                      BEGIN 0;
+                      return STR_CONST;
+                  }
+
+<InStr>.          {
+                      if (string_len >= MAX_STR_CONST) {
+                         strcpy(cool_yylval.error_msg, "String constant too long");
+                         BEGIN 0;
+                         return ERROR;
+                      }
+                      string_buf[string_len++] = yytext[0];
+                  }
+
+\"                {
+                      memset(string_buf, 0, sizeof(string_buf));
+                      string_len = 0;
+                      str_have_null_char = 0;
+                      BEGIN(InStr);
+                  }
 
 "class"           {return CLASS;}
 "inherits"        {return INHERITS;}
@@ -145,33 +200,26 @@ LINE            \n
 ","               {return ',';}
 "@"               {return '@';}
 
-
-{TYPEID}          {  
+[A-Z]+[_A-Za-z0-9]* {  
                     cool_yylval.symbol = new IdEntry(yytext,strlen(yytext),uniqueIndex++);
                     return TYPEID;
                   }
 
-{OBJECTID}        {
+[a-z]+[_a-zA-Z0-9]* {
                     cool_yylval.symbol = new IdEntry(yytext,strlen(yytext),uniqueIndex++);
                     return OBJECTID;
                   } 
 
-
-{STR_CONST}       {
-                    cool_yylval.symbol = new StringEntry(yytext,strlen(yytext),uniqueIndex++);
-                    return STR_CONST;
-                  }
-
-{INT_CONST}       {
+[0-9]+            {
                     cool_yylval.symbol = new IntEntry(yytext,strlen(yytext),uniqueIndex++);
                     return INT_CONST;
                   }
 
-{WHITE}           {}
+[ \t]+            {}
 
-{LINE}            {curr_lineno++;}
+\n                {curr_lineno++;}
 
-.                {
+.                 {
                     cool_yylval.error_msg = new char[strlen(yytext+1)];
                     strcpy(cool_yylval.error_msg,yytext);
                     return ERROR;
