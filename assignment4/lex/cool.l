@@ -82,7 +82,7 @@ int str_have_null_char = 0;
 <InStr>\\.        {
                       if (string_len >= MAX_STR_CONST) {
                          strcpy(cool_yylval.error_msg, "String constant too long");
-                         BEGIN 0;
+                         BEGIN StrTooLong;
                          return ERROR;
                       }
                       switch(yytext[1]){
