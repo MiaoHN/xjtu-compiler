@@ -53,7 +53,7 @@ int str_have_null_char = 0;
 
 /* 下面是我们给出的基本实例 */
 
-%s              MutiCom InStr
+%x              MutiCom InStr StrTooLong
 
 %%
 
@@ -114,7 +114,13 @@ int str_have_null_char = 0;
                          BEGIN 0;
                          return ERROR;
                       }
-                      cool_yylval.symbol = stringtable.add_string(string_buf);
+                      char *buffer = new char[string_len + 4];
+                      memcpy(buffer + 1, string_buf, string_len);
+                      buffer[0] = '\"';
+                      buffer[string_len + 1] = '\"';
+                      buffer[string_len + 2] = '\0';
+                      cool_yylval.symbol = stringtable.add_string(buffer);
+                      delete buffer;
                       BEGIN 0;
                       return STR_CONST;
                   }
@@ -122,11 +128,24 @@ int str_have_null_char = 0;
 <InStr>.          {
                       if (string_len >= MAX_STR_CONST) {
                          strcpy(cool_yylval.error_msg, "String constant too long");
-                         BEGIN 0;
+                         BEGIN StrTooLong;
                          return ERROR;
+                      } else {
+                         string_buf[string_len++] = yytext[0];
                       }
-                      string_buf[string_len++] = yytext[0];
                   }
+
+<StrTooLong>\"   {
+                     BEGIN 0;
+                 }
+<StrTooLong>\n   {
+                     curr_lineno++;
+                     BEGIN 0;
+                 }
+
+<StrTooLong>\\\n {curr_lineno++;}
+<StrTooLong>\\\" {}
+<StrTooLong>.    {}
 
 \"                {
                       memset(string_buf, 0, sizeof(string_buf));

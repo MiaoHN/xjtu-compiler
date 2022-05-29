@@ -29,7 +29,7 @@ check: compile
 	@./$(TARGET) test/test.cl > my-lexer.txt
 	@../bin/reference-lexer test/test.cl > reference-lexer.txt
 	@echo "\e[32;1mmy-lexer                                                      reference-lexer\e[33;0;m"
-	@diff -y --suppress-common-lines my-lexer.txt reference-lexer.txt ; [ $$? -eq 1 ]
+	@diff -y --suppress-common-lines my-lexer.txt reference-lexer.txt; [ $$? -ge 0 ]
 	@rm my-lexer.txt reference-lexer.txt
 	@echo "\e[32;1mCheck done.\e[33;0;m"
 
