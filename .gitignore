@@ -2,3 +2,6 @@
 *.s
 *.yy.c
 *.out
+*.tab.c
+*.tab.h
+calculator
