@@ -1,5 +1,8 @@
 .vscode/
 *.s
+*.o
+*.output
+cool-parse.cc
 *.yy.c
 *.out
 *.tab.c
