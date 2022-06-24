@@ -36,4 +36,4 @@ cool-parse.cc cool-parse.h: yacc/cool.y
 	mv -f cool.tab.c cool-parse.cc
 
 clean:
-	@rm -f $(TARGET) $(OBJS) $(CGEN) $(HGEN)
+	@rm -f $(TARGET) $(OBJS) $(CGEN) $(HGEN) *.output *.tab.h
