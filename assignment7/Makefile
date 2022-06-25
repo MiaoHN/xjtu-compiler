@@ -17,5 +17,10 @@ $(TARGET): $(OBJS)
 %.o:%.cc
 	$(CC) $(CFLAGS) $(INCLUDE) -o $@ -c $^
 
+test: $(TARGET) test/good.cl test/bad.cl
+	rm -f *.output
+	../bin/reference-lexer test/good.cl | ../bin/reference-parser | ./$(TARGET) > good.output
+	../bin/reference-lexer test/bad.cl | ../bin/reference-parser | ./$(TARGET) > bad.output
+
 clean:
-	rm -f *.out $(OBJS)
+	rm -f *.out $(OBJS) *.output
