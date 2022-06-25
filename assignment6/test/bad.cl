@@ -31,3 +31,7 @@ class Main inherits IO {
    main():Int {
    };
 };
+
+class F {
+   x
+};

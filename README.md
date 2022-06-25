@@ -9,3 +9,4 @@
 - [Assignment3](assignment3/)
 - [Assignment4](assignment4/)
 - [Assignment5](assignment5/)
+- [Assignment6](assignment6/)

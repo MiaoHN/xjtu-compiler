@@ -5,12 +5,18 @@ Class BB__ inherits A {
 };
 
 class Main inherits IO {
-    main() : SELF_TYPE {
-	{
-	    out_string((new Object).type_name().substr(4,1)).
-	    out_string((isvoid self).type_name().substr(1,3));
-	    out_string("\n");
-	}
-    };
+  x1 : Int;
+  x2 : Int <- 2;
+  main() : SELF_TYPE {
+	  {
+	    func("\n");
+      case x1 of
+        a : A => x1 <- x1 + 1;
+        b : B => x1 <- x1 + 1;
+      esac;
+      if x1 then x1 else x2 fi;
+      while x1 loop x2 <- x1 + x2 pool;
+      (let x: Int <- 1 in x2 <- x1 + x);
+	  }
+  };
 };
-

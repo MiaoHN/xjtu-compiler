@@ -87,7 +87,6 @@ int omerrs = 0;               /* number of errors in lexing and parsing */
 %type <expression> assignment
 
 /* Precedence declarations go here. */
-%right FLAG
 %right ASSIGN
 %right NOT
 %nonassoc '<' '=' LE
@@ -127,7 +126,8 @@ class
     }
   | CLASS TYPEID INHERITS TYPEID '{' feature_list '}' ';'
     { $$ = class_($2,$4,$6,stringtable.add_string(curr_filename)); }
-  | error ';' { yyerrok; }
+  | error ';' 
+    { yyerrok; }
   ;
 
 /* Feature list may be empty, but no empty features in list. */
@@ -180,9 +180,8 @@ expression_list2:
     { yyerrok; }
   ;
 
-
 expression:
-   OBJECTID ASSIGN expression
+    OBJECTID ASSIGN expression
     { $$ = assign($1, $3); }
   | expression '.' OBJECTID '(' expression_list1 ')'
     { $$ = dispatch($1, $3, $5); }
@@ -235,11 +234,11 @@ expression:
   ;
 
 let:
-    OBJECTID ':' TYPEID assignment IN expression %prec FLAG
+    OBJECTID ':' TYPEID assignment IN expression
     { $$ = let($1, $3, $4, $6); }
   | OBJECTID ':' TYPEID assignment ',' let
     { $$ = let($1, $3, $4, $6); }
-  | error IN expression %prec FLAG
+  | error IN expression
     { yyerrok; }
   | error ',' let
     { yyerrok; }
