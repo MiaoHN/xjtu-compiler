@@ -21,9 +21,6 @@ typedef ClassTable *ClassTableP;
 // you like: it is only here to provide a container for the supplied
 // methods.
 
-typedef std::vector<method_class*> Method;
-typedef SymbolTable<Symbol, Method> MethodsTable;
-
 class ClassTable {
 private:
   int semant_errors;
@@ -35,8 +32,6 @@ private:
   std::ostream& error_stream;
 
   std::map<Symbol, Class_> table;
-  MethodsTable methods_table;
-
 
 public:
   ClassTable(Classes);
