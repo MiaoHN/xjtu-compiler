@@ -5,6 +5,7 @@ class C {
            {
 		a <- x;
 		b <- y;
+		(let m: Int <- 1 in a = m);
 		self;
            }
 	};

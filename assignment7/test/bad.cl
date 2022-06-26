@@ -1,22 +1,9 @@
-class C {
-	a : Int;
-	b : Bool;
-	init(x : Int, y : Bool) : C {
-           {
-		a <- x;
-		b <- y;
-		self;
-           }
-	};
-};
+Class C Inherits A {};
+Class A Inherits B {};
+Class B Inherits C {};
+Class D Inherits E {};
 
 Class Main {
-	main():C {
-	 {
-	  (new C).init(1,1);
-	  (new C).init(1,true,3);
-	  (new C).iinit(1,true);
-	  (new C);
-	 }
-	};
+	main : Int <- 1;
+	man(): Int{0};
 };

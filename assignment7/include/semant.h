@@ -3,6 +3,8 @@
 
 #include <assert.h>
 #include <iostream>  
+#include <vector>
+#include <map>
 #include "cool-tree.h"
 #include "stringtab.h"
 #include "symtab.h"
@@ -19,11 +21,22 @@ typedef ClassTable *ClassTableP;
 // you like: it is only here to provide a container for the supplied
 // methods.
 
+typedef std::vector<method_class*> Method;
+typedef SymbolTable<Symbol, Method> MethodsTable;
+
 class ClassTable {
 private:
   int semant_errors;
+  void install_class(Symbol symbol, Class_ cls);
+  void install_classes(Classes &classes);
   void install_basic_classes();
+  void check_inherit();
+  void check_main();
   std::ostream& error_stream;
+
+  std::map<Symbol, Class_> table;
+  MethodsTable methods_table;
+
 
 public:
   ClassTable(Classes);
